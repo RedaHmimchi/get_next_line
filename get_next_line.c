@@ -108,12 +108,12 @@ char	*get_next_line(int fd)
             remove_first_line(buffer);
             break;
         }
-		/*if (readvalue <= 0 && result && result[0] == '\0') {
-        	free(result);
-        	return NULL;
-    	}*/
     }
 	final = get_first_line(result);
+	if (readvalue == 0)
+	{
+		buffer[0] = '\0';
+	}
 	free(result);
     return (final);
 }
