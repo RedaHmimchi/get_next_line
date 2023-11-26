@@ -6,7 +6,7 @@
 /*   By: rhmimchi <rhmimchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 19:54:30 by rhmimchi          #+#    #+#             */
-/*   Updated: 2023/11/23 01:45:21 by rhmimchi         ###   ########.fr       */
+/*   Updated: 2023/11/26 02:04:43 by rhmimchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,17 +24,15 @@ int check_line(char *str)
 	return (0);
 }
 
-char *check_first(char *str)
+char *get_first_line(char *str)
 {
 	int i = 0;
 	char *ret;
 
 	while (str[i] != '\n' && str[i] != '\0')
-	{
 		i++;
-	}
 
-	ret = malloc(sizeof(char) * (i + 1)); // Allocate memory for the line
+	ret = malloc(sizeof(char) * (i + 2));
 	if (ret == NULL)
 		return (NULL);
 
@@ -44,7 +42,8 @@ char *check_first(char *str)
 		ret[i] = str[i];
 		i++;
 	}
-	ret[i] = '\0';
+	ret[i] = '\n';
+	ret[i + 1] = '\0';
 	return (ret);
 }
 
@@ -54,7 +53,7 @@ void	remove_first_line(char *buffer)
 	int	j;
 
 	i = 0;
-	while (buffer[i] != '\0' && buffer[i] != '\n')
+	while (buffer[i] != '\n')
 		i++;
 	if (buffer[i] == '\n')
 		i++;
@@ -69,63 +68,56 @@ void	remove_first_line(char *buffer)
 			j++;
 			i++;
 		}
-		buffer[j] = '\0';
+		buffer[j] = '\0'; 
 	}
 }
 
 char	*get_next_line(int fd)
 {
-	static char *buffer;
-	char *result = NULL;
-	int readvalue;
-	char *newresult;
+	static char buffer[BUFFER_SIZE + 1];
+    char *result = NULL;
+	char *final = NULL;
+    int readvalue;
 	
-	if (buffer != NULL)
-	{
-		if (check_line(buffer) == 1)
-		{
-			result = check_first(buffer);
-			remove_first_line(buffer);
-			return result;
-		}
-		else
-		{
-			result = ft_strdup(buffer);
-			free(buffer);
-			buffer = NULL;
-		}
-	}
+    if (buffer[0] == '\0')
+	{ 
+        readvalue = read(fd, buffer, BUFFER_SIZE);
+        if (readvalue <= 0)
+            return NULL;
+        buffer[readvalue] = '\0';
+    }
 
-	if (buffer == NULL)
+    if (check_line(buffer) == 1)
 	{
-		buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-		if (buffer == NULL)
-			return NULL;
-		
-	}
+        result = get_first_line(buffer);
+        remove_first_line(buffer);
+        return result;
+    }
 
-	while (1)
+    result = ft_strdup(buffer);
+	
+
+    while ((readvalue = read(fd, buffer, BUFFER_SIZE)) > 0) 
 	{
-		readvalue = read(fd, buffer, BUFFER_SIZE);
-		if (readvalue <= 0)
-			break;
-		buffer[readvalue] = '\0';
-		newresult = ft_strjoin(result, check_first(buffer));
-		if (newresult == NULL)
-		{
-			free(result);
-			return NULL;
-		}
-		free(result);
-		result = ft_strdup(newresult);
-		free(newresult);
-		remove_first_line(buffer);
-		if (check_line(buffer) == 1)
-			break ;
-	}
-	return result;
+        buffer[readvalue] = '\0';
+        free(result);
+        result = ft_strjoin(result, buffer);
+
+        if (check_line(buffer) == 1)
+		{ 
+            remove_first_line(buffer);
+            break;
+        }
+		/*if (readvalue <= 0 && result && result[0] == '\0') {
+        	free(result);
+        	return NULL;
+    	}*/
+    }
+	final = get_first_line(result);
+	free(result);
+    return (final);
 }
-
+/*
 int main()
 {
 	int fd;
@@ -133,14 +125,11 @@ int main()
 	fd = open("text.txt", O_RDONLY);
 	int i = 0;
 	printf("=================================\n");
-	//get_next_line(fd);
-	//printf("%s\n", get_next_line(fd));
-	//printf("%s\n", get_next_line(fd));
-	//printf("%s\n", get_next_line(fd));
-	while (i < 6)
+	while (i < 7)
 	{
-		printf("%s\n", get_next_line(fd));
+		printf("%s", get_next_line(fd));
 		i++;
 	}
-	printf("=================================\n");
+	close(fd);
 }
+*/

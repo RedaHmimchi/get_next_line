@@ -6,7 +6,7 @@
 /*   By: rhmimchi <rhmimchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 20:17:04 by rhmimchi          #+#    #+#             */
-/*   Updated: 2023/11/23 01:26:10 by rhmimchi         ###   ########.fr       */
+/*   Updated: 2023/11/24 22:00:24 by rhmimchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ static char	*str_join(char const *s1, char const *s2, char	*ret)
 
 	i = 0;
 	j = 0;
-	while (s1[i] != '\0')
+	while (s1 != NULL && s1[i] != '\0')
 	{
 		ret[i] = s1[i];
 		i++;
