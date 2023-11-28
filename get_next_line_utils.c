@@ -6,7 +6,7 @@
 /*   By: rhmimchi <rhmimchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 20:17:04 by rhmimchi          #+#    #+#             */
-/*   Updated: 2023/11/24 22:00:24 by rhmimchi         ###   ########.fr       */
+/*   Updated: 2023/11/28 01:56:10 by rhmimchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ char	*ft_strdup(const char *s1)
 	int		len;
 	int		i;
 
+	if (s1 == NULL)
+		return (NULL);
 	len = ft_strlen(s1);
 	dup = malloc(len + 1);
 	if (dup == NULL)

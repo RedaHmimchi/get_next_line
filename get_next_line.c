@@ -6,7 +6,7 @@
 /*   By: rhmimchi <rhmimchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 19:54:30 by rhmimchi          #+#    #+#             */
-/*   Updated: 2023/11/26 02:04:43 by rhmimchi         ###   ########.fr       */
+/*   Updated: 2023/11/28 01:55:20 by rhmimchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,24 +26,29 @@ int check_line(char *str)
 
 char *get_first_line(char *str)
 {
-	int i = 0;
+	int i;
 	char *ret;
 
+	i = 0;
+	if (str == NULL)
+		return NULL;
 	while (str[i] != '\n' && str[i] != '\0')
 		i++;
-
 	ret = malloc(sizeof(char) * (i + 2));
 	if (ret == NULL)
 		return (NULL);
-
 	i = 0;
 	while (str[i] != '\n' && str[i] != '\0')
 	{
 		ret[i] = str[i];
 		i++;
 	}
-	ret[i] = '\n';
-	ret[i + 1] = '\0';
+	if (str[i] == '\n')
+	{
+		ret[i] = str[i];
+		i++;
+	}
+	ret[i] = '\0';
 	return (ret);
 }
 
@@ -82,8 +87,16 @@ char	*get_next_line(int fd)
     if (buffer[0] == '\0')
 	{ 
         readvalue = read(fd, buffer, BUFFER_SIZE);
-        if (readvalue <= 0)
+		if (readvalue == -1) // read error handling
+		{
+			buffer[0] = '\0';
+			return NULL;
+		}
+        if (readvalue <= 0) // to remove and test
+		{
+			buffer[0] = '\0'; // Indicates end of file
             return NULL;
+		}
         buffer[readvalue] = '\0';
     }
 
@@ -99,17 +112,22 @@ char	*get_next_line(int fd)
 
     while ((readvalue = read(fd, buffer, BUFFER_SIZE)) > 0) 
 	{
-        buffer[readvalue] = '\0';
+		buffer[readvalue] = '\0';
+		char *temp = ft_strjoin(result, buffer);
         free(result);
-        result = ft_strjoin(result, buffer);
-
-        if (check_line(buffer) == 1)
+        result = temp;
+		if (check_line(buffer) == 1)
 		{ 
-            remove_first_line(buffer);
-            break;
-        }
-    }
+			remove_first_line(buffer);
+			break;
+		}
+	}
 	final = get_first_line(result);
+	if (readvalue == -1) // read error handling
+	{
+		buffer[0] = '\0';
+		return NULL;
+	}
 	if (readvalue == 0)
 	{
 		buffer[0] = '\0';
@@ -125,7 +143,7 @@ int main()
 	fd = open("text.txt", O_RDONLY);
 	int i = 0;
 	printf("=================================\n");
-	while (i < 7)
+	while (i < 1)
 	{
 		printf("%s", get_next_line(fd));
 		i++;
