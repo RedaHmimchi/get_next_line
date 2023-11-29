@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rhmimchi <rhmimchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 19:54:30 by rhmimchi          #+#    #+#             */
-/*   Updated: 2023/11/29 20:16:17 by rhmimchi         ###   ########.fr       */
+/*   Updated: 2023/11/29 20:16:07 by rhmimchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 int	check_line(char *str)
 {
@@ -108,29 +108,29 @@ char	*ft_gnl(int fd, char *buffer, int readvalue, char *result)
 
 char	*get_next_line(int fd)
 {
-	static char	buffer[BUFFER_SIZE + 1];
+	static char	buffer[OPEN_MAX][BUFFER_SIZE + 1];
 	char		*result;
 	int			readvalue;
 
-	if (fd < 0)
+	if (fd < 0 || fd > OPEN_MAX)
 		return (NULL);
-	if (buffer[0] == '\0')
+	if (buffer[fd][0] == '\0')
 	{
-		readvalue = read(fd, buffer, BUFFER_SIZE);
+		readvalue = read(fd, buffer[fd], BUFFER_SIZE);
 		if (readvalue <= 0)
-			return (buffer[0] = '\0', NULL);
-		buffer[readvalue] = '\0';
+			return (buffer[fd][0] = '\0', NULL);
+		buffer[fd][readvalue] = '\0';
 	}
-	if (check_line(buffer) == 1)
+	if (check_line(buffer[fd]) == 1)
 	{
-		result = get_first_line(buffer);
-		remove_first_line(buffer);
+		result = get_first_line(buffer[fd]);
+		remove_first_line(buffer[fd]);
 		return (result);
 	}
-	result = ft_strdup(buffer);
+	result = ft_strdup(buffer[fd]);
 	if (result == NULL)
 		return (NULL);
-	return (ft_gnl(fd, buffer, readvalue, result));
+	return (ft_gnl(fd, buffer[fd], readvalue, result));
 }
 /*
 int main()
