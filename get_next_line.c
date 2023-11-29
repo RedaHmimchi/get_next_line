@@ -6,7 +6,7 @@
 /*   By: rhmimchi <rhmimchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 19:54:30 by rhmimchi          #+#    #+#             */
-/*   Updated: 2023/11/28 01:55:20 by rhmimchi         ###   ########.fr       */
+/*   Updated: 2023/11/29 03:02:42 by rhmimchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,8 @@ char	*get_next_line(int fd)
     }
 
     result = ft_strdup(buffer);
-	
+	if (!result)
+		return(NULL);
 
     while ((readvalue = read(fd, buffer, BUFFER_SIZE)) > 0) 
 	{
@@ -123,16 +124,19 @@ char	*get_next_line(int fd)
 		}
 	}
 	final = get_first_line(result);
+	if (!final)
+		return(free(result), NULL);
+	free(result);
 	if (readvalue == -1) // read error handling
 	{
 		buffer[0] = '\0';
+		free(final);
 		return NULL;
 	}
 	if (readvalue == 0)
 	{
 		buffer[0] = '\0';
 	}
-	free(result);
     return (final);
 }
 /*
