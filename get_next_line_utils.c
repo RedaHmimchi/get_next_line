@@ -6,7 +6,7 @@
 /*   By: rhmimchi <rhmimchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 20:17:04 by rhmimchi          #+#    #+#             */
-/*   Updated: 2023/11/28 01:56:10 by rhmimchi         ###   ########.fr       */
+/*   Updated: 2023/11/29 16:18:55 by rhmimchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,41 +96,4 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	if (ret == NULL)
 		return (NULL);
 	return (str_join(s1, s2, ret));
-}
-
-static char	*sub_str(char *ret, char const *s, unsigned int start, size_t len)
-{
-	size_t	i;
-
-	i = 0;
-	while (s[start] != '\0' && i < len)
-	{
-		ret[i] = s[start];
-		i++;
-		start++;
-	}
-	ret[i] = '\0';
-	return (ret);
-}
-
-char	*ft_substr(char const *s, unsigned int start, size_t len)
-{
-	char	*ret;
-
-	if (s == NULL)
-		return (NULL);
-	if (start >= ft_strlen(s)) 
-	{
-		ret = malloc(1);
-		if (ret == NULL)
-			return (NULL);
-		ret[0] = '\0';
-		return (ret);
-	}
-	if (len > ft_strlen(s) - start)
-		len = ft_strlen(s) - start;
-	ret = malloc((len + 1) * sizeof(char));
-	if (ret == NULL)
-		return (NULL);
-	return (sub_str(ret, s, start, len));
 }

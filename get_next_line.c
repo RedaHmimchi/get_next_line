@@ -6,16 +6,18 @@
 /*   By: rhmimchi <rhmimchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 19:54:30 by rhmimchi          #+#    #+#             */
-/*   Updated: 2023/11/29 03:02:42 by rhmimchi         ###   ########.fr       */
+/*   Updated: 2023/11/29 16:32:10 by rhmimchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int check_line(char *str)
+int	check_line(char *str)
 {
-	int i = 0;
-	while(str[i] != '\0')
+	int	i;
+
+	i = 0;
+	while (str[i] != '\0')
 	{
 		if (str[i] == '\n')
 			return (1);
@@ -24,17 +26,17 @@ int check_line(char *str)
 	return (0);
 }
 
-char *get_first_line(char *str)
+char	*get_first_line(char *str)
 {
-	int i;
-	char *ret;
+	int		i;
+	char	*ret;
 
 	i = 0;
 	if (str == NULL)
-		return NULL;
+		return (NULL);
 	while (str[i] != '\n' && str[i] != '\0')
 		i++;
-	ret = malloc(sizeof(char) * (i + 2));
+	ret = malloc(sizeof(char) * i + (check_line(str) + 1));
 	if (ret == NULL)
 		return (NULL);
 	i = 0;
@@ -48,8 +50,7 @@ char *get_first_line(char *str)
 		ret[i] = str[i];
 		i++;
 	}
-	ret[i] = '\0';
-	return (ret);
+	return (ret[i] = '\0', ret);
 }
 
 void	remove_first_line(char *buffer)
@@ -77,67 +78,61 @@ void	remove_first_line(char *buffer)
 	}
 }
 
-char	*get_next_line(int fd)
+char	*ft_gnl(int fd, char *buffer, int readvalue, char *result)
 {
-	static char buffer[BUFFER_SIZE + 1];
-    char *result = NULL;
-	char *final = NULL;
-    int readvalue;
-	
-    if (buffer[0] == '\0')
-	{ 
-        readvalue = read(fd, buffer, BUFFER_SIZE);
-		if (readvalue == -1) // read error handling
-		{
-			buffer[0] = '\0';
-			return NULL;
-		}
-        if (readvalue <= 0) // to remove and test
-		{
-			buffer[0] = '\0'; // Indicates end of file
-            return NULL;
-		}
-        buffer[readvalue] = '\0';
-    }
+	char	*temp;
+	char	*final;
 
-    if (check_line(buffer) == 1)
-	{
-        result = get_first_line(buffer);
-        remove_first_line(buffer);
-        return result;
-    }
-
-    result = ft_strdup(buffer);
-	if (!result)
-		return(NULL);
-
-    while ((readvalue = read(fd, buffer, BUFFER_SIZE)) > 0) 
+	while ((readvalue = read(fd, buffer, BUFFER_SIZE)) > 0)
 	{
 		buffer[readvalue] = '\0';
-		char *temp = ft_strjoin(result, buffer);
-        free(result);
-        result = temp;
+		temp = ft_strjoin(result, buffer);
+		free(result);
+		result = temp;
 		if (check_line(buffer) == 1)
-		{ 
+		{
 			remove_first_line(buffer);
-			break;
+			break ;
 		}
 	}
 	final = get_first_line(result);
-	if (!final)
-		return(free(result), NULL);
 	free(result);
-	if (readvalue == -1) // read error handling
+	if (readvalue == -1)
 	{
 		buffer[0] = '\0';
-		free(final);
-		return NULL;
+		return (free(final), NULL);
 	}
 	if (readvalue == 0)
-	{
 		buffer[0] = '\0';
+	return (final);
+}
+
+char	*get_next_line(int fd)
+{
+	static char	buffer[BUFFER_SIZE + 1];
+	char		*result;
+	int			readvalue;
+
+	if (buffer[0] == '\0')
+	{
+		readvalue = read(fd, buffer, BUFFER_SIZE);
+		if (readvalue <= 0)
+		{
+			buffer[0] = '\0';
+			return (NULL);
+		}
+		buffer[readvalue] = '\0';
 	}
-    return (final);
+	if (check_line(buffer) == 1)
+	{
+		result = get_first_line(buffer);
+		remove_first_line(buffer);
+		return (result);
+	}
+	result = ft_strdup(buffer);
+	if (result == NULL)
+		return (NULL);
+	return (ft_gnl(fd, buffer, readvalue, result));
 }
 /*
 int main()
